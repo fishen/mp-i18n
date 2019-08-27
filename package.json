@@ -1,0 +1,40 @@
+{
+  "name": "mp-i18n",
+  "version": "1.0.0",
+  "description": "A cross-platform i18n library for muti-miniprograms (wx、alipay、baidu、tt).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "tslint -c tslint.json 'src/**/*.ts'",
+    "fix": "tslint -c tslint.json 'src/**/*.ts' --fix",
+    "dts": "gulp dts",
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "npm run type-check -- --watch",
+    "build": "npm run type-check&&npm run fix&&webpack",
+    "pack": "npm run build&&npm run dts&&npm pack"
+  },
+  "keywords": [
+    "miniprogram",
+    "i18n",
+    "wxapp",
+    "tt",
+    "swan",
+    "my"
+  ],
+  "author": "fisher <i.yu@qq.com>",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fishen/mp-i18n.git"
+  },
+  "devDependencies": {
+    "bundle-dts": "^1.0.4",
+    "gulp": "^4.0.2",
+    "ts-loader": "^6.0.4",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.3",
+    "webpack": "^4.35.3",
+    "webpack-cli": "^3.3.6",
+    "webpack-node-externals": "^1.7.2"
+  }
+}

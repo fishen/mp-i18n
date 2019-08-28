@@ -9,7 +9,11 @@ export class DefaultProvider implements IProvider {
         this.provider = provider;
     }
     public getSetData(p: any): (data: any, callback?: () => void) => void {
-        return p && p.setData && p.setData.bind(p);
+        if (p && typeof p.setData === "function") {
+            return (data, callback) => p.setData(data, callback);
+        } else if (p && typeof p.setState === "function") {
+            return (data, callback) => p.setState(data, callback);
+        }
     }
     public request(params: { url: string }) {
         const fn = this.provider && this.provider.request;

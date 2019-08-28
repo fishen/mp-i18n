@@ -107,7 +107,12 @@ var DefaultProvider = /** @class */ (function () {
         this.provider = provider;
     }
     DefaultProvider.prototype.getSetData = function (p) {
-        return p && p.setData && p.setData.bind(p);
+        if (p && typeof p.setData === "function") {
+            return function (data, callback) { return p.setData(data, callback); };
+        }
+        else if (p && typeof p.setState === "function") {
+            return function (data, callback) { return p.setState(data, callback); };
+        }
     };
     DefaultProvider.prototype.request = function (params) {
         var fn = this.provider && this.provider.request;

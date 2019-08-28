@@ -64,7 +64,7 @@ var Index = (_temp2 = _class = function (_BaseComponent) {
     value: function componentDidMount() {
       var _this2 = this;
 
-      _index3.i18n.load(this.$scope).then(function (texts) {
+      _index3.i18n.load(this).then(function (texts) {
         var hello = texts.hello,
             world = texts.world,
             welcome = texts.welcome;

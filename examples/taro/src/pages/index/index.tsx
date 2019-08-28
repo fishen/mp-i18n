@@ -19,7 +19,7 @@ export default class Index extends Component<any, any> {
   componentWillMount() { }
 
   componentDidMount() {
-    i18n.load(this.$scope)
+    i18n.load(this)
       .then(texts => {
         const { hello, world, welcome } = texts;
         const hint = i18n.format(welcome, { hello, world });

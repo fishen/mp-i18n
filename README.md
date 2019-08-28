@@ -146,7 +146,6 @@ Page({
 Get or set current language.
 ## load( thisArg: any, options?: object )
 Load curennt language's resources and bind to the corresponding page or componet (default is current page).
->If used in the **Taro** framework, use **this.$scope** instead of this, such as i18n.load(this.$scope);
 * **thisArg**: page or component object.
 * **options**: load options.
 * * **path**(optional, string): the resource(page or component) path, default get current path by 'getCurrentPages'.

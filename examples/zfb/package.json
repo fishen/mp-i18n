@@ -10,6 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "mp-i18n": "file:../../mp-i18n-1.0.0.tgz"
+    "mp-i18n": "file:../../mp-i18n-1.1.2.tgz"
   }
 }

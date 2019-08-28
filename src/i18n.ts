@@ -2,7 +2,7 @@ import { defaultConfig, II18nConfigOptions } from "./config";
 import { I18nStore } from "./store";
 import { Util } from "./util";
 
-interface II18nOptions {
+export interface II18nOptions {
     /**
      * The resource(page or component) path, default get current path by 'getCurrentPages'.
      */
@@ -13,7 +13,7 @@ interface II18nOptions {
     texts?: Record<string, any>;
 }
 
-interface II18nLoadOptions extends II18nOptions {
+export interface II18nLoadOptions extends II18nOptions {
     /**
      * Variable name used in the template, default is '$t'.
      */
@@ -24,7 +24,7 @@ interface II18nLoadOptions extends II18nOptions {
     langVar?: string;
 }
 
-interface IFormatOptions {
+export interface IFormatOptions {
     /**
      * The variable matching start symbol, default is '{'.
      */
@@ -126,7 +126,7 @@ export class I18n {
         const { texts } = options;
         if (texts) {
             util.debug("Use local texts", texts);
-            return Promise.resolve(this.mergeTexts(texts));
+            return Promise.resolve(texts);
         }
         const { textsUrl, cachable } = config;
         if (!util.isFn(textsUrl)) { throw new Error("Please configure the 'textsUrl' option first."); }

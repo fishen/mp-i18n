@@ -177,7 +177,7 @@ declare module "mp-i18n/src/util" {
 }
 declare module "mp-i18n/src/i18n" {
     import { II18nConfigOptions } from "mp-i18n/src/config";
-    interface II18nOptions {
+    export interface II18nOptions {
         /**
          * The resource(page or component) path, default get current path by 'getCurrentPages'.
          */
@@ -187,7 +187,7 @@ declare module "mp-i18n/src/i18n" {
          */
         texts?: Record<string, any>;
     }
-    interface II18nLoadOptions extends II18nOptions {
+    export interface II18nLoadOptions extends II18nOptions {
         /**
          * Variable name used in the template, default is '$t'.
          */
@@ -197,7 +197,7 @@ declare module "mp-i18n/src/i18n" {
          */
         langVar?: string;
     }
-    interface IFormatOptions {
+    export interface IFormatOptions {
         /**
          * The variable matching start symbol, default is '{'.
          */
@@ -284,12 +284,11 @@ declare module "mp-i18n/src/i18n" {
          */
         mergeTexts(data: any, lang?: string): any;
     }
-    export {};
 }
 declare module "mp-i18n" {
-    import { I18n } from "mp-i18n/src/i18n";
+    import { I18n, IFormatOptions, II18nLoadOptions, II18nOptions } from "mp-i18n/src/i18n";
     const i18n: I18n;
-    export { i18n };
+    export { i18n, IFormatOptions, II18nLoadOptions, II18nOptions };
     export { IProvider } from "mp-i18n/src/providers/provider";
     export { DefaultProvider } from "mp-i18n/src/providers/default-provider";
 }

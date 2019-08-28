@@ -303,7 +303,7 @@ var I18n = /** @class */ (function () {
         var texts = options.texts;
         if (texts) {
             util.debug("Use local texts", texts);
-            return Promise.resolve(this.mergeTexts(texts));
+            return Promise.resolve(texts);
         }
         var textsUrl = config.textsUrl, cachable = config.cachable;
         if (!util.isFn(textsUrl)) {

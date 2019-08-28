@@ -4,7 +4,13 @@ Page({
   onLoad(query) {
     // 页面加载
     console.info(`Page onLoad with query: ${JSON.stringify(query)}`);
-    i18n.getTexts().then(console.log).catch(console.error);
+    i18n.load(this)
+      .then(texts => {
+        const { hello, world, welcome } = texts;
+        const hint = i18n.format(welcome, { hello, world });
+        this.setData({ hint });
+      })
+      .catch(console.error);
   },
   onReady() {
     // 页面加载完成

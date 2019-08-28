@@ -1,6 +1,6 @@
 {
   "name": "mp-i18n",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A cross-platform i18n library for muti-miniprograms (wx、alipay、baidu、tt).",
   "main": "index.js",
   "scripts": {
@@ -31,6 +31,7 @@
     "bundle-dts": "^1.0.4",
     "gulp": "^4.0.2",
     "ts-loader": "^6.0.4",
+    "ts-node": "^8.3.0",
     "tslint": "^5.18.0",
     "typescript": "^3.5.3",
     "webpack": "^4.35.3",

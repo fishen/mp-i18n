@@ -8,6 +8,9 @@ export class DefaultProvider implements IProvider {
     constructor(provider: any) {
         this.provider = provider;
     }
+    public getSetData(p: any): (data: any, callback?: () => void) => void {
+        return p && p.setData && p.setData.bind(p);
+    }
     public request(params: { url: string }) {
         const fn = this.provider && this.provider.request;
         return this.promisify(fn, params);

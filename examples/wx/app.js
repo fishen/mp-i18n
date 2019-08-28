@@ -10,7 +10,8 @@ App({
       lang: 'zh',
       indexUrl: () => `${baseUrl}/${version}/index.json`,
       textsUrl: (hash) => `${baseUrl}/${version}/${hash}.json`
-    })
+    });
+    i18n.getIndex();
     // 展示本地存储能力
     var logs = wx.getStorageSync('logs') || []
     logs.unshift(Date.now())

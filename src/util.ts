@@ -31,4 +31,12 @@ export class Util {
     public isFn(fn: any) {
         return typeof fn === "function";
     }
+
+    public isObj(obj: any) {
+        return typeof obj === "function";
+    }
+
+    public isStr(str: any) {
+        return typeof str === "string";
+    }
 }

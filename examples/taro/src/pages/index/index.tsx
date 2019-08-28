@@ -1,9 +1,9 @@
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Text } from '@tarojs/components'
+import { View } from '@tarojs/components'
 import './index.scss'
 import { i18n } from 'mp-i18n';
 
-export default class Index extends Component {
+export default class Index extends Component<any, any> {
 
   /**
    * 指定config的类型声明为: Taro.Config
@@ -19,7 +19,13 @@ export default class Index extends Component {
   componentWillMount() { }
 
   componentDidMount() {
-    i18n.getTexts().then(console.log).catch(console.error);
+    i18n.load(this.$scope)
+      .then(texts => {
+        const { hello, world, welcome } = texts;
+        const hint = i18n.format(welcome, { hello, world });
+        this.setState({ hint });
+      })
+      .catch(console.error);
   }
 
   componentWillUnmount() { }
@@ -29,9 +35,11 @@ export default class Index extends Component {
   componentDidHide() { }
 
   render() {
+    const { $t, hint } = this.state;
     return (
       <View className='index'>
-        <Text>Hello world!</Text>
+        <View>1.{hint}</View>
+        <View>2.{$t.hello}，{$t.world}。</View>
       </View>
     )
   }

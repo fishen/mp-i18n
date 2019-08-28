@@ -17,7 +17,14 @@ Page({
     })
   },
   onLoad: function () {
-    i18n.getTexts().then(console.log).catch(console.error);
+    i18n.load(this)
+      .then(texts => {
+        const { hello, world, welcome } = texts;
+        const hint = i18n.format(welcome, { hello, world });
+        this.setData({ hint });
+      })
+      .catch(console.error);
+
     if (app.globalData.userInfo) {
       this.setData({
         userInfo: app.globalData.userInfo,

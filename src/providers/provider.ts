@@ -1,4 +1,5 @@
 export interface IProvider {
+    getSetData(p: any): (data: any, callback?: () => void) => void;
     request(params: { url: string }): Promise<{ data: any, statusCode: number, header: object }>;
     getStorageInfo(): Promise<{ keys: string[] }>;
     removeStorage(params: { key: string }): Promise<any>;

@@ -8,9 +8,35 @@ interface II18nOptions {
      */
     path?: string;
     /**
-     * local texts resource, if not set, it will fetch from the remote.
+     * Local texts resource, if not set, it will fetch from the remote.
      */
     texts?: Record<string, any>;
+}
+
+interface II18nLoadOptions extends II18nOptions {
+    /**
+     * Variable name used in the template, default is '$t'.
+     */
+    tmplVar?: string;
+    /**
+     * Current language variable name, default is '$lang'.
+     */
+    langVar?: string;
+}
+
+interface IFormatOptions {
+    /**
+     * The variable matching start symbol, default is '{'.
+     */
+    left?: string;
+    /**
+     * The variable matching end symbol, default is '}'.
+     */
+    right?: string;
+    /**
+     * The default value for formatting, default is ''.
+     */
+    defaultValue?: string | object;
 }
 
 let config: II18nConfigOptions;
@@ -19,7 +45,6 @@ let util: Util;
 let userLanguage: string;
 
 export class I18n {
-
     /**
      * Get current language
      */
@@ -67,10 +92,11 @@ export class I18n {
 
     /**
      * Get index resource.
+     * @param options options.
      */
-    public getIndex(force?: boolean): Promise<Record<string, any>> {
+    public getIndex(options: { forced?: boolean } = {}): Promise<Record<string, any>> {
         const { indexUrl, cachable } = config;
-        if (!cachable || force) {
+        if (!cachable || options.forced) {
             if (!util.isFn(indexUrl)) { throw new Error("Please configure the 'indexUrl' option first."); }
             const url = indexUrl();
             if (this.getIndex.prototype.promise) { return this.getIndex.prototype.promise; }
@@ -83,14 +109,18 @@ export class I18n {
         } else {
             util.debug("Trying get index resource from local");
             return Promise.resolve(this.getIndex.prototype.data)
-                .then((data) => data || this.getIndex(true))
+                .then((data) => data || this.getIndex({ forced: true }))
                 .then((data) => this.getIndex.prototype.data = data);
         }
     }
 
     /**
-     * Get text resources
-     * @param options options
+     * Get original i18n resources for the corresponding page or componet (default is current page).
+     * @param options options.
+     * @returns the original resources.
+     *
+     * @example
+     * getTexts().then(console.log).catch(console.error);//{ zh:{ hello:"你好" },en:{ hello:"Hello" } }
      */
     public getTexts(options: II18nOptions = {}): Promise<any> {
         const { texts } = options;
@@ -132,17 +162,75 @@ export class I18n {
                     util.debug(`Getting text resource from remote`);
                     return util.request(url);
                 }
-            })
-            .then((t) => this.mergeTexts(t));
+            });
     }
 
     /**
-     * Merge texts
-     * @param data multi-language texts
-     * @param lang language
+     * Load curennt language's resources and bind to the corresponding page or componet (default is current page).
+     * @param thisArg page or component object.
+     * @param options load options.
+     * @returns the i18n resources.
      *
-     * mergetTexts({zh:{hi:'你好'},en:{hi:'Hi'}},'en')
-     * result: {hi:'Hi'}
+     * @example
+     * //index.js
+     * const {i18n}=require("mp-i18n");
+     * Page({
+     *  onLoad(){
+     *    i18n.load(this)
+     *  }
+     * })
+     *
+     * //index.wxss
+     * <view>{{$t.key}}</view>
+     */
+    public load(thisArg: any, options: II18nLoadOptions = {}): Promise<any> {
+        const setData = config.provider.getSetData(thisArg);
+        if (!util.isFn(setData)) { throw new TypeError(`param 'thisArg' has no method 'setData'.`); }
+        const tmplVar = options.tmplVar || config.tmplVar || defaultConfig.tmplVar;
+        const langVar = options.langVar || config.langVar || defaultConfig.langVar;
+        const getData = (texts) => ({ [tmplVar]: texts, [langVar]: this.language });
+        return this.getTexts(options)
+            .then((t) => this.mergeTexts(t))
+            .then((texts) => new Promise((resolve) => setData(getData(texts), () => resolve(texts))));
+    }
+
+    /**
+     * Format a template string with the specified parameter.
+     * @param template the template string.
+     * @param params the parameter object to format template.
+     * @param options formatting options, if the matching symbol(left and right) contains
+     * special characters, please use the character '\' to escape, such as { left:"\\${" }.
+     * @returns the formatting result.
+     *
+     * @example
+     * format('hello, {world}!', { world:'fisher' }) //hello, fisher!
+     * format('hello, {world}!', {},{ defaultValue:'world' }) //hello, world!
+     * format('hello, ${world}!', { world:'fisher' }, { left:"\\${" }) //hello, fisher!
+     */
+    public format(template: string, params: object, options?: IFormatOptions): string {
+        if (!template) { return template; }
+        if (!util.isStr(template)) { throw new TypeError(`The param 'template' must be string type.`); }
+        options = Object.assign({ left: "{", right: "}", defaultValue: "" }, options);
+        const { left, right, defaultValue } = options;
+        const regex = new RegExp(`${left}(.+?)${right}`, "g");
+        const result = template.replace(regex, function(substr: string, key: string) {
+            key = key.trim();
+            let value = params && params[key];
+            if (value === undefined && defaultValue !== undefined) {
+                value = typeof defaultValue === "object" ? defaultValue[key] : defaultValue;
+            }
+            return value;
+        });
+        return result;
+    }
+
+    /**
+     * Merge texts by specified or current language.
+     * @param data multi-language texts.
+     * @param lang the specified language, default use current language.
+     *
+     * @example
+     * mergetTexts({ zh:{ hi:'你好' },en:{ hi:'Hi' } },'en') //{ hi:'Hi' }
      */
     public mergeTexts(data: any, lang?: string) {
         if (!data) { return {}; }

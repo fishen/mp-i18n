@@ -1,5 +1,6 @@
 declare module "mp-i18n/src/providers/provider" {
     export interface IProvider {
+        getSetData(p: any): (data: any, callback?: () => void) => void;
         request(params: {
             url: string;
         }): Promise<{
@@ -33,6 +34,7 @@ declare module "mp-i18n/src/providers/default-provider" {
     export class DefaultProvider implements IProvider {
         protected provider: any;
         constructor(provider: any);
+        getSetData(p: any): (data: any, callback?: () => void) => void;
         request(params: {
             url: string;
         }): Promise<any>;
@@ -86,51 +88,62 @@ declare module "mp-i18n/src/config" {
     import { IProvider } from "mp-i18n/src/providers/provider";
     export interface II18nConfigOptions {
         /**
-         * Whether to use the cache, default is true.
+         * whether to enable cache, default is true.
          */
         cachable?: boolean;
         /**
-         * Whether to enable debug mode, default is false.
+         * whether to enable debug mode, default is false.
          */
         debug?: boolean;
         /**
-         * The stroage key for language user selected, it only works when setting 'rememberLanguage' to true.
+         * the stroage key for keeping language user selected, it only works when setting 'rememberLanguage' to true.
          * default is 'i18n_language'
          */
         languageStorageKey?: string;
         /**
-         * Whether to remember the language selected by the user.
+         * whether to remember the language selected by the user.
          */
         rememberLanguage?: boolean;
         /**
-         * The api provider, it is automatically created from the current environment by default.
+         * the api provider, it is automatically created from the current environment by default.
          */
         provider?: IProvider;
         /**
-         * The key prefix for storage.
+         * the key prefix for storage, default is 'i18n'.
          */
         storageKeyPrefix?: string;
         /**
-         * Initial language, default is 'zh_CN'.
+         * initial language, default is 'zh_CN',
+         * if the option 'rememberLanguage' is set to true, the rememberd language is preferred.
          */
         lang?: string;
         /**
-         * Texts file path factory function.
+         * texts file path factory function.
          */
         textsUrl: (hash: string, path: string) => string;
         /**
-         * Index file path factory function.
+         * index file path factory function.
          */
         indexUrl: () => string;
+        /**
+         * variable name used in the template, default is '$t'.
+         */
+        tmplVar?: string;
+        /**
+         * current language variable name, default is '$lang'.
+         */
+        langVar?: string;
     }
     export const defaultConfig: {
         cachable: boolean;
         debug: boolean;
         lang: string;
+        langVar: string;
         languageStorageKey: string;
         provider: IProvider;
         rememberLanguage: boolean;
         storageKeyPrefix: string;
+        tmplVar: string;
     };
 }
 declare module "mp-i18n/src/store" {
@@ -158,6 +171,8 @@ declare module "mp-i18n/src/util" {
         request(url: string): Promise<any>;
         debug(...args: any[]): void;
         isFn(fn: any): boolean;
+        isObj(obj: any): boolean;
+        isStr(str: any): boolean;
     }
 }
 declare module "mp-i18n/src/i18n" {
@@ -168,9 +183,33 @@ declare module "mp-i18n/src/i18n" {
          */
         path?: string;
         /**
-         * local texts resource, if not set, it will fetch from the remote.
+         * Local texts resource, if not set, it will fetch from the remote.
          */
         texts?: Record<string, any>;
+    }
+    interface II18nLoadOptions extends II18nOptions {
+        /**
+         * Variable name used in the template, default is '$t'.
+         */
+        tmplVar?: string;
+        /**
+         * Current language variable name, default is '$lang'.
+         */
+        langVar?: string;
+    }
+    interface IFormatOptions {
+        /**
+         * The variable matching start symbol, default is '{'.
+         */
+        left?: string;
+        /**
+         * The variable matching end symbol, default is '}'.
+         */
+        right?: string;
+        /**
+         * The default value for formatting, default is ''.
+         */
+        defaultValue?: string | object;
     }
     export class I18n {
         /**
@@ -188,20 +227,60 @@ declare module "mp-i18n/src/i18n" {
         config(options: II18nConfigOptions): void;
         /**
          * Get index resource.
+         * @param options options.
          */
-        getIndex(force?: boolean): Promise<Record<string, any>>;
+        getIndex(options?: {
+            forced?: boolean;
+        }): Promise<Record<string, any>>;
         /**
-         * Get text resources
-         * @param options options
+         * Get original i18n resources for the corresponding page or componet (default is current page).
+         * @param options options.
+         * @returns the original resources.
+         *
+         * @example
+         * getTexts().then(console.log).catch(console.error);//{ zh:{ hello:"你好" },en:{ hello:"Hello" } }
          */
         getTexts(options?: II18nOptions): Promise<any>;
         /**
-         * Merge texts
-         * @param data multi-language texts
-         * @param lang language
+         * Load curennt language's resources and bind to the corresponding page or componet (default is current page).
+         * @param thisArg page or component object.
+         * @param options load options.
+         * @returns the i18n resources.
          *
-         * mergetTexts({zh:{hi:'你好'},en:{hi:'Hi'}},'en')
-         * result: {hi:'Hi'}
+         * @example
+         * //index.js
+         * const {i18n}=require("mp-i18n");
+         * Page({
+         *  onLoad(){
+         *    i18n.load(this)
+         *  }
+         * })
+         *
+         * //index.wxss
+         * <view>{{$t.key}}</view>
+         */
+        load(thisArg: any, options?: II18nLoadOptions): Promise<any>;
+        /**
+         * Format a template string with the specified parameter.
+         * @param template the template string.
+         * @param params the parameter object to format template.
+         * @param options formatting options, if the matching symbol(left and right) contains
+         * special characters, please use the character '\' to escape, such as { left:"\\${" }.
+         * @returns the formatting result.
+         *
+         * @example
+         * format('hello, {world}!', { world:'fisher' }) //hello, fisher!
+         * format('hello, {world}!', {},{ defaultValue:'world' }) //hello, world!
+         * format('hello, ${world}!', { world:'fisher' }, { left:"\\${" }) //hello, fisher!
+         */
+        format(template: string, params: object, options?: IFormatOptions): string;
+        /**
+         * Merge texts by specified or current language.
+         * @param data multi-language texts.
+         * @param lang the specified language, default use current language.
+         *
+         * @example
+         * mergetTexts({ zh:{ hi:'你好' },en:{ hi:'Hi' } },'en') //{ hi:'Hi' }
          */
         mergeTexts(data: any, lang?: string): any;
     }

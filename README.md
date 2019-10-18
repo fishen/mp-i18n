@@ -1,12 +1,40 @@
-# mp-i18n
-A cross-platform i18n library for muti-miniprograms (wx、alipay、baidu、tt).
+<!-- TOC -->
+
+- [MP-I18N](#mp-i18n)
+- [Installation](#installation)
+- [Getting Started](#getting-started)
+- [API](#api)
+    - [config( options: object)](#config-options-object)
+    - [format(template: string, params: object, options?: object)](#formattemplate-string-params-object-options-object)
+    - [getIndex( options?: object )](#getindex-options-object-)
+    - [getLanguage() : string](#getlanguage--string)
+    - [getTexts( options?: object )](#gettexts-options-object-)
+    - [language](#language)
+    - [load( thisArg: any, options?: object )](#load-thisarg-any-options-object-)
+    - [mergetTexts(texts: object, lang?: string)](#mergettextstexts-object-lang-string)
+    - [setLanguage(lang : string) : void](#setlanguagelang--string--void)
+- [Decorators](#decorators)
+    - [@i18n(options:object)](#i18noptionsobject)
+        - [Decorate method](#decorate-method)
+        - [Decorate class(page)](#decorate-classpage)
+        - [Decorate class(component)](#decorate-classcomponent)
+- [Customize](#customize)
+    - [API provider](#api-provider)
+- [Resource Structure](#resource-structure)
+    - [Index file](#index-file)
+    - [Resource file](#resource-file)
+- [Also See](#also-see)
+
+<!-- /TOC -->
+# MP-I18N
+A cross-platform i18n library for muti-miniprograms (taro、wx、alipay、baidu、tt).
 
 # Installation
 
 >`$ npm install --save mp-i18n`
 
-# Getting started
-```
+# Getting Started
+```js
 // app.js
 
 import { i18n } from 'mp-i18n';
@@ -67,10 +95,12 @@ Configure global i18n options.
 * * **languageStorageKey**(optional, string): the stroage key for keeping language user selected, it only works when setting 'rememberLanguage' to true, default is 'i18n_language'.
 * * **provider**(optional, object): the api provider, it is automatically created from the current environment by default.
 * * **rememberLanguage**(optional, boolean): whether to remember the language selected by the user.
-* * **storageKeyPrefix**(optional, string): The key prefix for storage, default is 'i18n'.
+* * **storageKeyPrefix**(optional, string): the key prefix for storage, default is 'i18n'.
 * * **textsUrl**(*required*, function): texts file path factory function.
 * * **tmplVar**(optional, string): variable name used in the template, default is '$t'.
-```
+* * **componentLifetime**(optional, string): the specified component's lifetime for loading i18n resources, default is 'attached'.
+* * **pageLifetime**(optional, string): the specified page's lifetime for loading i18n resources, default is 'onLoad'.
+```js
 import { i18n } from 'mp-i18n';
 
 const baseUrl = 'https://raw.githubusercontent.com/fishen/assets/master/wx-i18n';
@@ -91,7 +121,7 @@ Format a template string with the specified parameter.
 * * **left**(optional, string): The variable matching start flag, default is '{'.
 * * **right**(optional, string): The variable matching end flag, default is '}'.
 * * **defaultValue**(optional, string | object): the default value for formatting, default is ''.
-```
+```js
 import { i18n } from 'mp-i18n';
 
 i18n.format('hello, {world}!', { world:'fisher' })
@@ -110,7 +140,7 @@ hello, fisher!
 Get index resource, the index resource request will only be called once between the entire  lifecycle and will be re-requested at the next time the program restart. In addition only one request will be initiated at the same time.
 * **options**: resource options.
 * * **forced**(optional, boolean): whether to require a forced refresh.
-```
+```js
 import { i18n } from 'mp-i18n';
 
 Page({
@@ -119,15 +149,17 @@ Page({
   }
 })
 ```
-```
+```json
 { "pages/index/index":"d41d8cd98f00b204e9800998ecf8427e" }
 ```
+## getLanguage() : string
+Get current language
 ## getTexts( options?: object )
 Get original i18n resources for the corresponding page or componet (default is current page).
 * **options**: resource options.
 * * **path**(optional, string): the resource(page or component) path, default get current path by 'getCurrentPages'.
 * * **texts**(optional, object): local texts resource, if not set, it will fetch from the remote.
-```
+```js
 import { i18n } from 'mp-i18n';
 
 Page({
@@ -136,7 +168,7 @@ Page({
   }
 })
 ```
-```
+```json
 {
   "zh":{"hello":"你好","world":"世界","welcome":"{hello}，{world}。"},
   "en":{"hello":"Hello","world":"World","welcome":"{hello}, {world}."}
@@ -152,7 +184,7 @@ Load curennt language's resources and bind to the corresponding page or componet
 * * **texts**(optional, object): local texts resource, if not set, it will fetch from the remote.
 * * **tempVar**(optional, string): variable name used in the template, default is '$t'.
 * * **langVar**(optional, string): current language variable name, default is '$lang'.
-```
+```js
 import { i18n } from 'mp-i18n';
 
 Page({
@@ -164,11 +196,12 @@ Page({
     i18n.load(this).then(console.log);
   }
 })
-
+```
+```xml
 <view>current language is {{$lang}}</view>
 <view>{{$t.hello}}</view>
 ```
-```
+```js
 {hi: "嗨"}
 {hello: "你好", world: "世界", welcome: "{hello}，{world}。"}
 
@@ -179,19 +212,60 @@ current language is zh
 Merge texts by specified or current language.
 * **texts**: the multi-language texts.
 * **lang**: the specified language, default use current language.
-```
+```js
 import { i18n } from 'mp-i18n';
 
 i18n.mergetTexts({ zh: { hi:'你好' }, en: { hi:'Hi' } },'en'); 
 ```
-```
+```json
 { hi:'Hi' }
 ```
+## setLanguage(lang : string) : void
+Set current language
+# Decorators
+## @i18n(options:object)
+* **options**: load options.
+* * **path**(optional, string): the resource(page or component) path, default get current path by 'getCurrentPages'.
+* * **texts**(optional, object): local texts resource, if not set, it will fetch from the remote.
+* * **tempVar**(optional, string): variable name used in the template, default is '$t'.
+* * **langVar**(optional, string): current language variable name, default is '$lang'.
+* * **isComponent**(optional, boolean): whether the current target is a component, used to decorate classes.
+* * **isPage**(optional, boolean): whether the current target is a page, used to decorate classes.
+* * **lifetime**(optional, string): the specified lifetime for loading i18n resources, used to decorate classes.
+### Decorate method
+```js
+import { page, Page } from 'wxa-core';
+import { i18n } from 'mp-i18n';
+
+@page()
+export default class extends Page{
+  @i18n()
+  onLoad(options){}
+}
+```
+### Decorate class(page)
+```js
+import { page, Page } from 'wxa-core';
+import { i18n } from 'mp-i18n';
+
+@page()
+@i18n({ isPage:true })
+export default class extends Page{}
+``` 
+### Decorate class(component)
+```js
+import { component, Component } from 'wxa-core';
+import { i18n } from 'mp-i18n';
+
+@component()
+@i18n({ isComponent:true })
+export default class extends Component{}
+``` 
 # Customize
 ## API provider
 By default, provider is automatically created based on the environment. If you want to change the default behavior, set the provider option when calling the config method.
 > You can create a custom provider more easily by inheriting the **DefaultProvider**.
-```
+```js
 import { i18n } from 'mp-i18n';
 
 class MyProvider{
@@ -208,7 +282,7 @@ i18n.config({
 })
 ```
 For the complete provider definition, please refer to the following interface.
-```
+```ts
 export interface IProvider {
     getSetData(p: any): (data: any, callback?: () => void) => void;
     request(params: { url: string }): Promise<{ data: any, statusCode: number, header: object }>;
@@ -220,10 +294,10 @@ export interface IProvider {
     getCurrentPages(): [{ route: string }];
 }
 ```
-# Resource structure required
+# Resource Structure
 ## Index file
 The file includes all path and version(hash value) info.
-```
+```js
 {
   [page or component path]:[text resource hash value],
   "pages/home/home":"84b7f497e34e10725c4dfdf389e092b8",
@@ -232,7 +306,7 @@ The file includes all path and version(hash value) info.
 ```
 ## Resource file
 The file include multi-language text resources
-```
+```js
 {
   [lang]: {
     [key] : [value]
@@ -249,5 +323,14 @@ The file include multi-language text resources
   }
 }
 ```
+# Also See
+[wxa-core](https://www.npmjs.com/package/wxa-core): build and use WeChat miniprogram core function with typescript.
+[mp-event](https://www.npmjs.com/package/mp-event): a simple event subscription publishing system implementation;
 
+[mp-i18n](https://www.npmjs.com/package/mp-i18n): a cross-platform i18n library for muti-miniprograms (wx、alipay、baidu、tt);
 
+[mp-modal](https://www.npmjs.com/package/mp-modal): a helper cross-platform tool for miniprograms that can more convenient to use modal components.
+
+[mp-mem](https://www.npmjs.com/package/mp-mem): a lightweight memoize library that can be used on both normal functions and class methods;
+
+[auto-mapping](https://www.npmjs.com/package/auto-mapping): map and convert objects automatically in typescript;

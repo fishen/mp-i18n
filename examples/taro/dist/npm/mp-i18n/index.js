@@ -227,8 +227,7 @@
 
   Object.defineProperty(exports, "__esModule", { value: true });
   var i18n_1 = __webpack_require__(3);
-  var i18n = new i18n_1.I18n();
-  exports.i18n = i18n;
+  exports.i18n = i18n_1.i18n;
   var default_provider_1 = __webpack_require__(0);
   exports.DefaultProvider = default_provider_1.DefaultProvider;
 
@@ -243,258 +242,285 @@
   var config_1 = __webpack_require__(4);
   var store_1 = __webpack_require__(7);
   var util_1 = __webpack_require__(8);
-  var config;
   var store;
   var util;
   var userLanguage;
-  var I18n = /** @class */function () {
-    function I18n(options) {
-      this.config(options);
-    }
-    Object.defineProperty(I18n.prototype, "language", {
-      /**
-       * Get current language
-       */
-      get: function () {
-        var rememberLanguage = config.rememberLanguage,
-            languageStorageKey = config.languageStorageKey,
-            provider = config.provider;
-        if (rememberLanguage && languageStorageKey) {
-          if (userLanguage) {
-            return userLanguage;
-          } else {
-            var lang = provider.getStorageSync(config.languageStorageKey);
-            if (lang) {
-              return userLanguage = lang;
-            }
+  function i18n(options) {
+    var decorator = function (target, name, descriptor) {
+      if (typeof target === "function") {
+        var lifetime = options.lifetime;
+        lifetime = lifetime || options.isPage && exports.config.pageLifetime;
+        lifetime = lifetime || options.isComponent && exports.config.componentLifetime;
+        if (!lifetime) {
+          console.warn("When Used to decorate class with 'i18n', please set 'isComponent' or 'isPage' option");
+          return;
+        }
+        var originalValue_1 = target.prototype[lifetime];
+        target.prototype[lifetime] = function () {
+          var _this = this;
+          var args = [];
+          for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
           }
-        }
-        return config.lang;
-      },
-      /**
-       * Set current language
-       */
-      set: function (lang) {
-        config.lang = lang;
-        var rememberLanguage = config.rememberLanguage,
-            languageStorageKey = config.languageStorageKey,
-            provider = config.provider;
-        if (rememberLanguage && languageStorageKey) {
-          userLanguage = lang;
-          provider.setStorage({ key: languageStorageKey, data: lang });
-        }
-      },
-      enumerable: true,
-      configurable: true
-    });
-    /**
-     * Configure i18n options
-     * @param options
-     */
-    I18n.prototype.config = function (options) {
-      config = Object.assign(config_1.defaultConfig, options);
-      store = new store_1.I18nStore(config);
-      util = new util_1.Util(config);
-      util.debug("Current i18n config:", config);
-    };
-    /**
-     * Get index resource.
-     * @param options options.
-     */
-    I18n.prototype.getIndex = function (options) {
-      var _this = this;
-      if (options === undefined) {
-        options = {};
-      }
-      var indexUrl = config.indexUrl,
-          cachable = config.cachable;
-      if (!cachable || options.forced) {
-        if (!util.isFn(indexUrl)) {
-          throw new Error("Please configure the 'indexUrl' option first.");
-        }
-        var url = indexUrl();
-        if (this.getIndex.prototype.promise) {
-          return this.getIndex.prototype.promise;
-        }
-        util.debug("Getting index resource from remote");
-        var clear_1 = function () {
-          return _this.getIndex.prototype.promise = undefined;
+          return decorator.fn.call(this).finally(function () {
+            return originalValue_1 && originalValue_1.apply(_this, args);
+          });
         };
-        var promise = util.request(url).then(function (data) {
-          return store.clear(data);
-        }).then(function (data) {
-          return clear_1(), data;
-        }, function (error) {
-          return clear_1(), Promise.reject(error);
-        });
-        return this.getIndex.prototype.promise = promise;
       } else {
-        util.debug("Trying get index resource from local");
-        return Promise.resolve(this.getIndex.prototype.data).then(function (data) {
-          return data || _this.getIndex({ forced: true });
-        }).then(function (data) {
-          return _this.getIndex.prototype.data = data;
-        });
-      }
-    };
-    /**
-     * Get original i18n resources for the corresponding page or componet (default is current page).
-     * @param options options.
-     * @returns the original resources.
-     *
-     * @example
-     * getTexts().then(console.log).catch(console.error);//{ zh:{ hello:"你好" },en:{ hello:"Hello" } }
-     */
-    I18n.prototype.getTexts = function (options) {
-      if (options === undefined) {
-        options = {};
-      }
-      var texts = options.texts;
-      if (texts) {
-        util.debug("Use local texts", texts);
-        return Promise.resolve(texts);
-      }
-      var textsUrl = config.textsUrl,
-          cachable = config.cachable;
-      if (!util.isFn(textsUrl)) {
-        throw new Error("Please configure the 'textsUrl' option first.");
-      }
-      var path = options.path || util.getCurrentPageRoute();
-      util.debug("Current i18n path is " + path);
-      if (typeof path !== "string") {
-        throw new TypeError("The path must be string type.");
-      }
-      return this.getIndex().then(function (resources) {
-        return resources[path];
-      }).then(function (hash) {
-        if (!hash) {
-          return Promise.reject(new Error("The path '" + path + "' was not defined in index file."));
-        }
-        var url = textsUrl(hash, path);
-        if (cachable) {
-          return store.get(path).then(function (data) {
-            if (data && data.version === hash) {
-              util.debug("Getting text resource from cache.");
-              return data;
-            } else {
-              if (!data) {
-                util.debug("The cache resource not exists and getting text resource from remote");
-              } else {
-                store.remove(path);
-                util.debug("The cache resource has expired.");
-              }
-              return util.request(url).then(function (res) {
-                return res.version = hash, res;
-              }).then(function (t) {
-                return store.set(path, t), t;
-              });
-            }
+        var originalValue_2 = descriptor.value;
+        descriptor.value = function () {
+          var _this = this;
+          var args = [];
+          for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+          }
+          return decorator.fn.call(this).finally(function () {
+            return originalValue_2.apply(_this, args);
           });
-        } else {
-          util.debug("Getting text resource from remote");
-          return util.request(url);
-        }
-      });
+        };
+      }
     };
-    /**
-     * Load curennt language's resources and bind to the corresponding page or componet (default is current page).
-     * @param thisArg page or component object.
-     * @param options load options.
-     * @returns the i18n resources.
-     *
-     * @example
-     * //index.js
-     * const {i18n}=require("mp-i18n");
-     * Page({
-     *  onLoad(){
-     *    i18n.load(this)
-     *  }
-     * })
-     *
-     * //index.wxss
-     * <view>{{$t.key}}</view>
-     */
-    I18n.prototype.load = function (thisArg, options) {
-      var _this = this;
-      if (options === undefined) {
-        options = {};
+    decorator.fn = function () {
+      return i18n.load(this, options);
+    };
+    return decorator;
+  }
+  exports.i18n = i18n;
+  /**
+   * Get current language
+   */
+  i18n.getLanguage = function () {
+    var rememberLanguage = exports.config.rememberLanguage,
+        languageStorageKey = exports.config.languageStorageKey,
+        provider = exports.config.provider;
+    if (rememberLanguage && languageStorageKey) {
+      if (userLanguage) {
+        return userLanguage;
+      } else {
+        var lang = provider.getStorageSync(exports.config.languageStorageKey);
+        if (lang) {
+          return userLanguage = lang;
+        }
       }
-      var setData = config.provider.getSetData(thisArg);
-      if (!util.isFn(setData)) {
-        throw new TypeError("param 'thisArg' has no method 'setData'.");
+    }
+    return exports.config.lang;
+  };
+  /**
+   * Set current language
+   */
+  i18n.setLanguage = function (lang) {
+    exports.config.lang = lang;
+    var rememberLanguage = exports.config.rememberLanguage,
+        languageStorageKey = exports.config.languageStorageKey,
+        provider = exports.config.provider;
+    if (rememberLanguage && languageStorageKey) {
+      userLanguage = lang;
+      provider.setStorage({ key: languageStorageKey, data: lang });
+    }
+  };
+  /**
+   * Configure i18n options
+   * @param options
+   */
+  i18n.config = function (options) {
+    exports.config = Object.assign(config_1.defaultConfig, options);
+    store = new store_1.I18nStore(exports.config);
+    util = new util_1.Util(exports.config);
+    util.debug("Current i18n config:", exports.config);
+  };
+  /**
+   * Get index resource.
+   * @param options options.
+   */
+  i18n.getIndex = function (options) {
+    if (options === undefined) {
+      options = {};
+    }
+    var indexUrl = exports.config.indexUrl,
+        cachable = exports.config.cachable;
+    if (!cachable || options.forced) {
+      if (!util.isFn(indexUrl)) {
+        throw new Error("Please configure the 'indexUrl' option first.");
       }
-      var tmplVar = options.tmplVar || config.tmplVar || config_1.defaultConfig.tmplVar;
-      var langVar = options.langVar || config.langVar || config_1.defaultConfig.langVar;
-      var getData = function (texts) {
-        var _a;
-        return _a = {}, _a[tmplVar] = texts, _a[langVar] = _this.language, _a;
+      var url = indexUrl();
+      if (i18n.getIndex.prototype.promise) {
+        return i18n.getIndex.prototype.promise;
+      }
+      util.debug("Getting index resource from remote");
+      var clear_1 = function () {
+        return i18n.getIndex.prototype.promise = undefined;
       };
-      return this.getTexts(options).then(function (t) {
-        return _this.mergeTexts(t);
-      }).then(function (texts) {
-        return new Promise(function (resolve) {
-          return setData(getData(texts), function () {
-            return resolve(texts);
-          });
+      var promise = util.request(url).then(function (data) {
+        return store.clear(data);
+      }).then(function (data) {
+        return clear_1(), data;
+      }, function (error) {
+        return clear_1(), Promise.reject(error);
+      });
+      return i18n.getIndex.prototype.promise = promise;
+    } else {
+      util.debug("Trying get index resource from local");
+      return Promise.resolve(i18n.getIndex.prototype.data).then(function (data) {
+        return data || i18n.getIndex({ forced: true });
+      }).then(function (data) {
+        return i18n.getIndex.prototype.data = data;
+      });
+    }
+  };
+  /**
+   * Get original i18n resources for the corresponding page or componet (default is current page).
+   * @param options options.
+   * @returns the original resources.
+   *
+   * @example
+   * i18n.getTexts().then(console.log).catch(console.error);//{ zh:{ hello:"你好" },en:{ hello:"Hello" } }
+   */
+  i18n.getTexts = function (options) {
+    if (options === undefined) {
+      options = {};
+    }
+    var texts = options.texts;
+    if (texts) {
+      util.debug("Use local texts", texts);
+      return Promise.resolve(texts);
+    }
+    var textsUrl = exports.config.textsUrl,
+        cachable = exports.config.cachable;
+    if (!util.isFn(textsUrl)) {
+      throw new Error("Please configure the 'textsUrl' option first.");
+    }
+    var path = options.path || util.getCurrentPageRoute();
+    util.debug("Current i18n path is " + path);
+    if (typeof path !== "string") {
+      throw new TypeError("The path must be string type.");
+    }
+    return i18n.getIndex().then(function (resources) {
+      return resources[path];
+    }).then(function (hash) {
+      if (!hash) {
+        return Promise.reject(new Error("The path '" + path + "' was not defined in index file."));
+      }
+      var url = textsUrl(hash, path);
+      if (cachable) {
+        return store.get(path).then(function (data) {
+          if (data && data.version === hash) {
+            util.debug("Getting text resource from cache.");
+            return data;
+          } else {
+            if (!data) {
+              util.debug("The cache resource not exists and getting text resource from remote");
+            } else {
+              store.remove(path);
+              util.debug("The cache resource has expired.");
+            }
+            return util.request(url).then(function (res) {
+              return res.version = hash, res;
+            }).then(function (t) {
+              return store.set(path, t), t;
+            });
+          }
+        });
+      } else {
+        util.debug("Getting text resource from remote");
+        return util.request(url);
+      }
+    });
+  };
+  /**
+   * Load curennt language's resources and bind to the corresponding page or componet (default is current page).
+   * @param thisArg page or component object.
+   * @param options load options.
+   * @returns the i18n resources.
+   *
+   * @example
+   * //index.js
+   * const { i18n }=require("mp-i18n");
+   * Page({
+   *  onLoad(){
+   *    i18n.load(this)
+   *  }
+   * })
+   *
+   * //index.wxss
+   * <view>{{$t.key}}</view>
+   */
+  i18n.load = function (thisArg, options) {
+    if (options === undefined) {
+      options = {};
+    }
+    var setData = exports.config.provider.getSetData(thisArg);
+    if (!util.isFn(setData)) {
+      throw new TypeError("param 'thisArg' has no method 'setData'.");
+    }
+    var tmplVar = options.tmplVar || exports.config.tmplVar || config_1.defaultConfig.tmplVar;
+    var langVar = options.langVar || exports.config.langVar || config_1.defaultConfig.langVar;
+    var getData = function (texts) {
+      var _a;
+      return _a = {}, _a[tmplVar] = texts, _a[langVar] = i18n.getLanguage(), _a;
+    };
+    return i18n.getTexts(options).then(function (t) {
+      return i18n.mergeTexts(t);
+    }).then(function (texts) {
+      return new Promise(function (resolve) {
+        return setData(getData(texts), function () {
+          return resolve(texts);
         });
       });
-    };
-    /**
-     * Format a template string with the specified parameter.
-     * @param template the template string.
-     * @param params the parameter object to format template.
-     * @param options formatting options, if the matching symbol(left and right) contains
-     * special characters, please use the character '\' to escape, such as { left:"\\${" }.
-     * @returns the formatting result.
-     *
-     * @example
-     * format('hello, {world}!', { world:'fisher' }) //hello, fisher!
-     * format('hello, {world}!', {},{ defaultValue:'world' }) //hello, world!
-     * format('hello, ${world}!', { world:'fisher' }, { left:"\\${" }) //hello, fisher!
-     */
-    I18n.prototype.format = function (template, params, options) {
-      if (!template) {
-        return template;
+    });
+  };
+  /**
+   * Format a template string with the specified parameter.
+   * @param template the template string.
+   * @param params the parameter object to format template.
+   * @param options formatting options, if the matching symbol(left and right) contains
+   * special characters, please use the character '\' to escape, such as { left:"\\${" }.
+   * @returns the formatting result.
+   *
+   * @example
+   * i18n.format('hello, {world}!', { world:'fisher' }) //hello, fisher!
+   * i18n.format('hello, {world}!', {},{ defaultValue:'world' }) //hello, world!
+   * i18n.format('hello, ${world}!', { world:'fisher' }, { left:"\\${" }) //hello, fisher!
+   */
+  i18n.format = function (template, params, options) {
+    if (!template) {
+      return template;
+    }
+    if (!util.isStr(template)) {
+      throw new TypeError("The param 'template' must be string type.");
+    }
+    options = Object.assign({ left: "{", right: "}", defaultValue: "" }, options);
+    var left = options.left,
+        right = options.right,
+        defaultValue = options.defaultValue;
+    var regex = new RegExp(left + "(.+?)" + right, "g");
+    var result = template.replace(regex, function (substr, key) {
+      key = key.trim();
+      var value = params && params[key];
+      if (value === undefined && defaultValue !== undefined) {
+        value = typeof defaultValue === "object" ? defaultValue[key] : defaultValue;
       }
-      if (!util.isStr(template)) {
-        throw new TypeError("The param 'template' must be string type.");
-      }
-      options = Object.assign({ left: "{", right: "}", defaultValue: "" }, options);
-      var left = options.left,
-          right = options.right,
-          defaultValue = options.defaultValue;
-      var regex = new RegExp(left + "(.+?)" + right, "g");
-      var result = template.replace(regex, function (substr, key) {
-        key = key.trim();
-        var value = params && params[key];
-        if (value === undefined && defaultValue !== undefined) {
-          value = typeof defaultValue === "object" ? defaultValue[key] : defaultValue;
-        }
-        return value;
-      });
-      return result;
-    };
-    /**
-     * Merge texts by specified or current language.
-     * @param data multi-language texts.
-     * @param lang the specified language, default use current language.
-     *
-     * @example
-     * mergetTexts({ zh:{ hi:'你好' },en:{ hi:'Hi' } },'en') //{ hi:'Hi' }
-     */
-    I18n.prototype.mergeTexts = function (data, lang) {
-      if (!data) {
-        return {};
-      }
-      var language = lang || this.language;
-      if (!(language in data)) {
-        util.debug("The resource corresponding to " + language + " does not exist.", data);
-      }
-      return data[language];
-    };
-    return I18n;
-  }();
-  exports.I18n = I18n;
+      return value;
+    });
+    return result;
+  };
+  /**
+   * Merge texts by specified or current language.
+   * @param data multi-language texts.
+   * @param lang the specified language, default use current language.
+   *
+   * @example
+   * i18n.mergetTexts({ zh:{ hi:'你好' },en:{ hi:'Hi' } },'en') //{ hi:'Hi' }
+   */
+  i18n.mergeTexts = function (data, lang) {
+    if (!data) {
+      return {};
+    }
+    var language = lang || i18n.getLanguage();
+    if (!(language in data)) {
+      util.debug("The resource corresponding to " + language + " does not exist.", data);
+    }
+    return data[language];
+  };
 
   /***/
 },
@@ -507,10 +533,12 @@
   var provider_factory_1 = __webpack_require__(5);
   exports.defaultConfig = {
     cachable: true,
+    componentLifetime: "attached",
     debug: false,
     lang: "zh_CN",
     langVar: "$lang",
     languageStorageKey: "i18n_language",
+    pageLifetime: "onLoad",
     provider: provider_factory_1.createProvider(),
     rememberLanguage: true,
     storageKeyPrefix: "i18n",

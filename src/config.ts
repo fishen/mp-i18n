@@ -3,16 +3,18 @@ import { createProvider } from "./providers/provider-factory";
 
 export interface II18nConfigOptions {
     /**
-     * whether to enable cache, default is true.
+     * whether to enable cache,
+     * @default true.
      */
     cachable?: boolean;
     /**
-     * whether to enable debug mode, default is false.
+     * whether to enable debug mode
+     * @default false.
      */
     debug?: boolean;
     /**
      * the stroage key for keeping language user selected, it only works when setting 'rememberLanguage' to true.
-     * default is 'i18n_language'
+     * @default 'i18n_language'
      */
     languageStorageKey?: string;
     /**
@@ -24,12 +26,14 @@ export interface II18nConfigOptions {
      */
     provider?: IProvider;
     /**
-     * the key prefix for storage, default is 'i18n'.
+     * the key prefix for storage
+     * @default 'i18n'
      */
     storageKeyPrefix?: string;
     /**
-     * initial language, default is 'zh_CN',
+     * initial language
      * if the option 'rememberLanguage' is set to true, the rememberd language is preferred.
+     * @default 'zh_CN'
      */
     lang?: string;
     /**
@@ -41,21 +45,35 @@ export interface II18nConfigOptions {
      */
     indexUrl: () => string;
     /**
-     * variable name used in the template, default is '$t'.
+     * variable name used in the template
+     * @default '$t'.
      */
     tmplVar?: string;
     /**
-     * current language variable name, default is '$lang'.
+     * current language variable name
+     * @default '$lang'.
      */
     langVar?: string;
+    /**
+     * the specified component's lifetime for loading i18n resources
+     * @default attached
+     */
+    componentLifetime?: string;
+    /**
+     * the specified page's lifetime for loading i18n resources
+     * @default onLoad
+     */
+    pageLifetime?: string;
 }
 
 export const defaultConfig = {
     cachable: true,
+    componentLifetime: "attached",
     debug: false,
     lang: "zh_CN",
     langVar: "$lang",
     languageStorageKey: "i18n_language",
+    pageLifetime: "onLoad",
     provider: createProvider(),
     rememberLanguage: true,
     storageKeyPrefix: "i18n",

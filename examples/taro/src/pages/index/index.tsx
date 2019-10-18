@@ -3,6 +3,7 @@ import { View } from '@tarojs/components'
 import './index.scss'
 import { i18n } from 'mp-i18n';
 
+@i18n({ isPage: true })
 export default class Index extends Component<any, any> {
 
   /**
@@ -16,17 +17,30 @@ export default class Index extends Component<any, any> {
     navigationBarTitleText: '首页'
   }
 
-  componentWillMount() { }
+  // componentDidMount() {
+  //   const { hello, world, welcome } = this.state.$t;
+  //   const hint = i18n.format(welcome, { hello, world });
+  //   this.setState({ hint });
+  //   console.log('decorate class', hint);
+  // }
 
-  componentDidMount() {
-    i18n.load(this)
-      .then(texts => {
-        const { hello, world, welcome } = texts;
-        const hint = i18n.format(welcome, { hello, world });
-        this.setState({ hint });
-      })
-      .catch(console.error);
-  }
+  // @i18n()
+  // componentWillMount() {
+  //   const { hello, world, welcome } = this.state.$t;
+  //   const hint = i18n.format(welcome, { hello, world });
+  //   this.setState({ hint });
+  //   console.log('decorate method', hint);
+  // }
+
+  // componentDidMount() {
+  //   i18n.load(this)
+  //     .then(texts => {
+  //       const { hello, world, welcome } = texts;
+  //       const hint = i18n.format(welcome, { hello, world });
+  //       this.setState({ hint });
+  //     })
+  //     .catch(console.error);
+  // }
 
   componentWillUnmount() { }
 

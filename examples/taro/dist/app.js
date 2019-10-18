@@ -30,7 +30,9 @@ _index3.i18n.config({
   },
   textsUrl: function textsUrl(hash) {
     return baseUrl + "/" + version + "/" + hash + ".json";
-  }
+  },
+  pageLifetime: 'componentDidMount',
+  componentLifetime: 'componentDidMount'
 });
 
 // 如果需要在 h5 环境中开启 React Devtools

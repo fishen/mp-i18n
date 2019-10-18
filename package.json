@@ -1,7 +1,7 @@
 {
   "name": "mp-i18n",
-  "version": "1.1.2",
-  "description": "A cross-platform i18n library for muti-miniprograms (wx、alipay、baidu、tt).",
+  "version": "2.0.0",
+  "description": "A cross-platform i18n library for muti-miniprograms (taro、wx、alipay、baidu、tt).",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -16,6 +16,7 @@
   "keywords": [
     "miniprogram",
     "i18n",
+    "taro",
     "wxapp",
     "tt",
     "swan",
@@ -28,7 +29,7 @@
     "url": "https://github.com/fishen/mp-i18n.git"
   },
   "devDependencies": {
-    "bundle-dts": "^1.0.4",
+    "bundle-dts": "^1.0.7",
     "gulp": "^4.0.2",
     "ts-loader": "^6.0.4",
     "ts-node": "^8.3.0",

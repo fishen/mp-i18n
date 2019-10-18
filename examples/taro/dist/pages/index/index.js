@@ -10,6 +10,10 @@ var _get = function get(object, property, receiver) { if (object === null) objec
 
 var _class, _temp2;
 
+var _tslib = require("../../npm/tslib/tslib.js");
+
+var tslib_1 = _interopRequireWildcard(_tslib);
+
 var _index = require("../../npm/@tarojs/taro-weapp/index.js");
 
 var _index2 = _interopRequireDefault(_index);
@@ -17,6 +21,8 @@ var _index2 = _interopRequireDefault(_index);
 var _index3 = require("../../npm/mp-i18n/index.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -56,23 +62,29 @@ var Index = (_temp2 = _class = function (_BaseComponent) {
        */
       this.$$refs = [];
     }
-  }, {
-    key: "componentWillMount",
-    value: function componentWillMount() {}
-  }, {
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      var _this2 = this;
+    // componentDidMount() {
+    //   const { hello, world, welcome } = this.state.$t;
+    //   const hint = i18n.format(welcome, { hello, world });
+    //   this.setState({ hint });
+    //   console.log('decorate class', hint);
+    // }
+    // @i18n()
+    // componentWillMount() {
+    //   const { hello, world, welcome } = this.state.$t;
+    //   const hint = i18n.format(welcome, { hello, world });
+    //   this.setState({ hint });
+    //   console.log('decorate method', hint);
+    // }
+    // componentDidMount() {
+    //   i18n.load(this)
+    //     .then(texts => {
+    //       const { hello, world, welcome } = texts;
+    //       const hint = i18n.format(welcome, { hello, world });
+    //       this.setState({ hint });
+    //     })
+    //     .catch(console.error);
+    // }
 
-      _index3.i18n.load(this).then(function (texts) {
-        var hello = texts.hello,
-            world = texts.world,
-            welcome = texts.welcome;
-
-        var hint = _index3.i18n.format(welcome, { hello: hello, world: world });
-        _this2.setState({ hint: hint });
-      }).catch(console.error);
-    }
   }, {
     key: "componentWillUnmount",
     value: function componentWillUnmount() {}
@@ -105,6 +117,7 @@ var Index = (_temp2 = _class = function (_BaseComponent) {
 
   return Index;
 }(_index.Component), _class.$$events = [], _class.$$componentPath = "pages/index/index", _temp2);
+Index = tslib_1.__decorate([(0, _index3.i18n)({ isPage: true })], Index);
 exports.default = Index;
 
 Component(require('../../npm/@tarojs/taro-weapp/index.js').default.createComponent(Index, true));

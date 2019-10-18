@@ -8,7 +8,9 @@ i18n.config({
   debug: true,
   lang: 'zh',
   indexUrl: () => `${baseUrl}/${version}/index.json`,
-  textsUrl: (hash) => `${baseUrl}/${version}/${hash}.json`
+  textsUrl: (hash) => `${baseUrl}/${version}/${hash}.json`,
+  pageLifetime: 'componentDidMount',
+  componentLifetime: 'componentDidMount',
 })
 
 import './app.scss'

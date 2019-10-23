@@ -406,8 +406,13 @@ i18n.load = function (thisArg, options) {
     var tmplVar = options.tmplVar || exports.config.tmplVar || config_1.defaultConfig.tmplVar;
     var langVar = options.langVar || exports.config.langVar || config_1.defaultConfig.langVar;
     var getData = function (texts) {
-        var _a;
-        return (_a = {}, _a[tmplVar] = texts, _a[langVar] = i18n.getLanguage(), _a);
+        var data = {};
+        var lang = i18n.getLanguage();
+        // tslint:disable-next-line
+        lang && (data[langVar] = i18n.getLanguage());
+        // tslint:disable-next-line
+        texts && (data[tmplVar] = texts);
+        return data;
     };
     return i18n.getTexts(options)
         .then(function (t) { return i18n.mergeTexts(t); })

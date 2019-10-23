@@ -226,7 +226,15 @@ i18n.load = function(thisArg: any, options: II18nLoadOptions = {}): Promise<any>
     if (!util.isFn(setData)) { throw new TypeError(`param 'thisArg' has no method 'setData'.`); }
     const tmplVar = options.tmplVar || config.tmplVar || defaultConfig.tmplVar;
     const langVar = options.langVar || config.langVar || defaultConfig.langVar;
-    const getData = (texts) => ({ [tmplVar]: texts, [langVar]: i18n.getLanguage() });
+    const getData = (texts) => {
+        const data = {};
+        const lang = i18n.getLanguage();
+        // tslint:disable-next-line
+        lang && (data[langVar] = i18n.getLanguage());
+        // tslint:disable-next-line
+        texts && (data[tmplVar] = texts);
+        return data;
+    };
     return i18n.getTexts(options)
         .then((t) => i18n.mergeTexts(t))
         .then((texts) => new Promise((resolve) => setData(getData(texts), () => resolve(texts))));

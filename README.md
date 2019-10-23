@@ -218,7 +218,7 @@ import { i18n } from 'mp-i18n';
 i18n.mergetTexts({ zh: { hi:'你好' }, en: { hi:'Hi' } },'en'); 
 ```
 ```json
-{ hi:'Hi' }
+{ "hi":"Hi" }
 ```
 ## setLanguage(lang : string) : void
 Set current language
@@ -325,6 +325,7 @@ The file include multi-language text resources
 ```
 # Also See
 [wxa-core](https://www.npmjs.com/package/wxa-core): build and use WeChat miniprogram core function with typescript.
+
 [mp-event](https://www.npmjs.com/package/mp-event): a simple event subscription publishing system implementation;
 
 [mp-i18n](https://www.npmjs.com/package/mp-i18n): a cross-platform i18n library for muti-miniprograms (wx、alipay、baidu、tt);

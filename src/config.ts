@@ -57,11 +57,13 @@ export interface II18nConfigOptions {
     /**
      * the specified component's lifetime for loading i18n resources
      * @default attached
+     * @deprecated
      */
     componentLifetime?: string;
     /**
      * the specified page's lifetime for loading i18n resources
      * @default onLoad
+     * @deprecated
      */
     pageLifetime?: string;
 }

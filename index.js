@@ -81,27 +81,23 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports) {
+
+module.exports = require("tslib");
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(0);
 var DefaultProvider = /** @class */ (function () {
     function DefaultProvider(provider) {
         this.provider = provider;
@@ -148,7 +144,7 @@ var DefaultProvider = /** @class */ (function () {
             throw new TypeError("Invalid provider type.");
         }
         params = Object.assign({}, params);
-        return new Promise(function (success, fail) { return fn(__assign({}, params, { success: success, fail: fail })); })
+        return new Promise(function (success, fail) { return fn(tslib_1.__assign({}, params, { success: success, fail: fail })); })
             .catch(function (err) { return (console.log(err), Promise.reject(err)); });
     };
     return DefaultProvider;
@@ -157,28 +153,16 @@ exports.DefaultProvider = DefaultProvider;
 
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var default_provider_1 = __webpack_require__(0);
+var tslib_1 = __webpack_require__(0);
+var default_provider_1 = __webpack_require__(1);
 var TTProvider = /** @class */ (function (_super) {
-    __extends(TTProvider, _super);
+    tslib_1.__extends(TTProvider, _super);
     function TTProvider() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
@@ -191,40 +175,61 @@ exports.TTProvider = TTProvider;
 
 
 /***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var i18n_1 = __webpack_require__(3);
-exports.i18n = i18n_1.i18n;
-var default_provider_1 = __webpack_require__(0);
-exports.DefaultProvider = default_provider_1.DefaultProvider;
-
-
-/***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var config_1 = __webpack_require__(4);
-var store_1 = __webpack_require__(7);
-var util_1 = __webpack_require__(8);
+exports.DESIGN_PARAM_TYPES = "design:paramtypes";
+exports.DESIGN_TYPE = "design:type";
+exports.DESIGN_RETURN_TYPE = "design:returntype";
+exports.I18N_LOAD_LIFETIME = Symbol("i18n load lifetime");
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var i18n_1 = __webpack_require__(5);
+exports.i18n = i18n_1.i18n;
+var default_provider_1 = __webpack_require__(1);
+exports.DefaultProvider = default_provider_1.DefaultProvider;
+var constants_1 = __webpack_require__(3);
+exports.I18N_LOAD_LIFETIME = constants_1.I18N_LOAD_LIFETIME;
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var config_1 = __webpack_require__(6);
+var constants_1 = __webpack_require__(3);
+var store_1 = __webpack_require__(9);
+var util_1 = __webpack_require__(10);
 var store;
 var util;
 var userLanguage;
+function getLifetime(target, options) {
+    options = Object.assign({}, options);
+    var lifetime = options.lifetime;
+    lifetime = lifetime || target.prototype[constants_1.I18N_LOAD_LIFETIME];
+    lifetime = lifetime || options.isPage && exports.config.pageLifetime;
+    lifetime = lifetime || options.isComponent && exports.config.componentLifetime;
+    return lifetime;
+}
 function i18n(options) {
     var decorator = function (target, name, descriptor) {
         if (typeof target === "function") {
-            var lifetime = options.lifetime;
-            lifetime = lifetime || options.isPage && exports.config.pageLifetime;
-            lifetime = lifetime || options.isComponent && exports.config.componentLifetime;
+            var lifetime = getLifetime(target, options);
             if (!lifetime) {
-                console.warn("When Used to decorate class with 'i18n', please set 'isComponent' or 'isPage' option");
-                return;
+                throw new Error("unknown lifetime to load i18n resource.");
             }
             var originalValue_1 = target.prototype[lifetime];
             target.prototype[lifetime] = function () {
@@ -472,13 +477,13 @@ i18n.mergeTexts = function (data, lang) {
 
 
 /***/ }),
-/* 4 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var provider_factory_1 = __webpack_require__(5);
+var provider_factory_1 = __webpack_require__(7);
 exports.defaultConfig = {
     cachable: true,
     componentLifetime: "attached",
@@ -495,15 +500,15 @@ exports.defaultConfig = {
 
 
 /***/ }),
-/* 5 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var alipay_provider_1 = __webpack_require__(6);
-var default_provider_1 = __webpack_require__(0);
-var toutiao_provider_1 = __webpack_require__(1);
+var alipay_provider_1 = __webpack_require__(8);
+var default_provider_1 = __webpack_require__(1);
+var toutiao_provider_1 = __webpack_require__(2);
 function createProvider() {
     try {
         if (wx !== undefined) {
@@ -534,28 +539,16 @@ exports.createProvider = createProvider;
 
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var toutiao_provider_1 = __webpack_require__(1);
+var tslib_1 = __webpack_require__(0);
+var toutiao_provider_1 = __webpack_require__(2);
 var AliProvider = /** @class */ (function (_super) {
-    __extends(AliProvider, _super);
+    tslib_1.__extends(AliProvider, _super);
     function AliProvider() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
@@ -569,7 +562,7 @@ exports.AliProvider = AliProvider;
 
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -628,7 +621,7 @@ exports.I18nStore = I18nStore;
 
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

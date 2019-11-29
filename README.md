@@ -98,8 +98,8 @@ Configure global i18n options.
 * * **storageKeyPrefix**(optional, string): the key prefix for storage, default is 'i18n'.
 * * **textsUrl**(*required*, function): texts file path factory function.
 * * **tmplVar**(optional, string): variable name used in the template, default is '$t'.
-* * **componentLifetime**(optional, string): the specified component's lifetime for loading i18n resources, default is 'attached'.
-* * **pageLifetime**(optional, string): the specified page's lifetime for loading i18n resources, default is 'onLoad'.
+* * **[deprecated]componentLifetime**(optional, string): the specified component's lifetime for loading i18n resources, default is 'attached'.
+* * **[deprecated]pageLifetime**(optional, string): the specified page's lifetime for loading i18n resources, default is 'onLoad'.
 ```js
 import { i18n } from 'mp-i18n';
 
@@ -223,19 +223,29 @@ i18n.mergetTexts({ zh: { hi:'你好' }, en: { hi:'Hi' } },'en');
 ## setLanguage(lang : string) : void
 Set current language
 # Decorators
+Recommended settings
+```js
+//app.ts(entry file)
+import { Page, Component } from 'wxa-core';
+import { i18n, I18N_LOAD_LIFETIME } from 'mp-i18n';
+
+//config default loader
+Page.prototype[I18N_LOAD_LIFETIME] = "onLoad";
+Component.prototype[I18N_LOAD_LIFETIME] = "attached";
+```
 ## @i18n(options:object)
 * **options**: load options.
 * * **path**(optional, string): the resource(page or component) path, default get current path by 'getCurrentPages'.
 * * **texts**(optional, object): local texts resource, if not set, it will fetch from the remote.
 * * **tempVar**(optional, string): variable name used in the template, default is '$t'.
 * * **langVar**(optional, string): current language variable name, default is '$lang'.
-* * **isComponent**(optional, boolean): whether the current target is a component, used to decorate classes.
-* * **isPage**(optional, boolean): whether the current target is a page, used to decorate classes.
 * * **lifetime**(optional, string): the specified lifetime for loading i18n resources, used to decorate classes.
+* * **[deprecated]isComponent**(optional, boolean): whether the current target is a component, used to decorate classes.
+* * **[deprecated]isPage**(optional, boolean): whether the current target is a page, used to decorate classes.
 ### Decorate method
 ```js
 import { page, Page } from 'wxa-core';
-import { i18n } from 'mp-i18n';
+import { i18n, I18N_LOAD_LIFETIME } from 'mp-i18n';
 
 @page()
 export default class extends Page{
@@ -249,7 +259,7 @@ import { page, Page } from 'wxa-core';
 import { i18n } from 'mp-i18n';
 
 @page()
-@i18n({ isPage:true })
+@i18n()
 export default class extends Page{}
 ``` 
 ### Decorate class(component)
@@ -258,7 +268,7 @@ import { component, Component } from 'wxa-core';
 import { i18n } from 'mp-i18n';
 
 @component()
-@i18n({ isComponent:true })
+@i18n()
 export default class extends Component{}
 ``` 
 # Customize

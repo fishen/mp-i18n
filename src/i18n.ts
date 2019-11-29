@@ -1,4 +1,5 @@
 import { defaultConfig, II18nConfigOptions } from "./config";
+import { I18N_LOAD_LIFETIME } from "./constants";
 import { I18nStore } from "./store";
 import { Util } from "./util";
 
@@ -26,15 +27,16 @@ export interface II18nLoadOptions extends II18nOptions {
     langVar?: string;
     /**
      * Whether the current target is a component, used to decorate classes.
+     * @deprecated
      */
     isComponent?: boolean;
     /**
      * Whether the current target is a page, used to decorate classes.
+     * @deprecated
      */
     isPage?: boolean;
     /**
      * The specified lifetime for loading i18n resources, used to decorate classes.
-     * @default 'attached' for component and 'onLoad' for page.
      */
     lifetime?: string;
 }
@@ -61,16 +63,20 @@ let store: I18nStore;
 let util: Util;
 let userLanguage: string;
 
+function getLifetime(target: any, options: II18nLoadOptions) {
+    options = Object.assign({}, options);
+    let lifetime = options.lifetime;
+    lifetime = lifetime || target.prototype[I18N_LOAD_LIFETIME];
+    lifetime = lifetime || options.isPage && config.pageLifetime;
+    lifetime = lifetime || options.isComponent && config.componentLifetime;
+    return lifetime;
+}
+
 export function i18n(options?: II18nLoadOptions): any {
     const decorator = function(target: any, name?: string, descriptor?: PropertyDescriptor) {
         if (typeof target === "function") {
-            let lifetime = options.lifetime;
-            lifetime = lifetime || options.isPage && config.pageLifetime;
-            lifetime = lifetime || options.isComponent && config.componentLifetime;
-            if (!lifetime) {
-                console.warn("When Used to decorate class with 'i18n', please set 'isComponent' or 'isPage' option");
-                return;
-            }
+            const lifetime = getLifetime(target, options);
+            if (!lifetime) { throw new Error("unknown lifetime to load i18n resource."); }
             const originalValue = target.prototype[lifetime];
             target.prototype[lifetime] = function(...args: any[]) {
                 return decorator.fn.call(this).finally(() => originalValue && originalValue.apply(this, args));

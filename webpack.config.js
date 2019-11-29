@@ -1,5 +1,6 @@
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
+const DtsBundleWebpack = require('dts-bundle-webpack');
 
 module.exports = {
     mode: 'production',
@@ -9,6 +10,13 @@ module.exports = {
     module: {
         rules: [{ test: /\.ts(x?)$/, loader: "ts-loader" }]
     },
+    plugins: [
+        new DtsBundleWebpack({
+            name: 'mp-i18n',
+            main: 'dts/index.d.ts',
+            out: "~/index.d.ts",
+        })
+    ],
     resolve: {
         extensions: ['.ts']
     },

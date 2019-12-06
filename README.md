@@ -9,7 +9,6 @@
     - [getIndex( options?: object )](#getindex-options-object-)
     - [getLanguage() : string](#getlanguage--string)
     - [getTexts( options?: object )](#gettexts-options-object-)
-    - [language](#language)
     - [load( thisArg: any, options?: object )](#load-thisarg-any-options-object-)
     - [mergetTexts(texts: object, lang?: string)](#mergettextstexts-object-lang-string)
     - [setLanguage(lang : string) : void](#setlanguagelang--string--void)
@@ -93,6 +92,7 @@ Configure global i18n options.
 * * **lang**(optional, string): initial language, default is 'zh_CN', if the option 'rememberLanguage' is set to true, the rememberd language is preferred.
 * * **langVar**(optional, string): current language variable name, default is '$lang'.
 * * **languageStorageKey**(optional, string): the stroage key for keeping language user selected, it only works when setting 'rememberLanguage' to true, default is 'i18n_language'.
+* * **lifetime**(optional,string|((prototype)=>string)): the specified lifetime for loading i18n resources.
 * * **provider**(optional, object): the api provider, it is automatically created from the current environment by default.
 * * **rememberLanguage**(optional, boolean): whether to remember the language selected by the user.
 * * **storageKeyPrefix**(optional, string): the key prefix for storage, default is 'i18n'.
@@ -174,8 +174,6 @@ Page({
   "en":{"hello":"Hello","world":"World","welcome":"{hello}, {world}."}
 }
 ```
-## language
-Get or set current language.
 ## load( thisArg: any, options?: object )
 Load curennt language's resources and bind to the corresponding page or componet (default is current page).
 * **thisArg**: page or component object.
@@ -224,14 +222,22 @@ i18n.mergetTexts({ zh: { hi:'你好' }, en: { hi:'Hi' } },'en');
 Set current language
 # Decorators
 Recommended settings
-```js
-//app.ts(entry file)
+```ts
+// app.ts(entry file)
 import { Page, Component } from 'wxa-core';
 import { i18n, I18N_LOAD_LIFETIME } from 'mp-i18n';
 
-//config default loader
+// config default loader
+// [taro] Component.prototype[I18N_LOAD_LIFETIME] = "componentDidMount";
 Page.prototype[I18N_LOAD_LIFETIME] = "onLoad";
 Component.prototype[I18N_LOAD_LIFETIME] = "attached";
+// or
+i18n.config({
+  ...
+  // [taro] lifetime: 'componentDidMount',
+  lifetime: (prototype) => prototype instanceof Page?'onLoad':'attached',
+  ...
+})
 ```
 ## @i18n(options:object)
 * **options**: load options.

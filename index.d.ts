@@ -204,15 +204,19 @@ declare module 'mp-i18n/config' {
                 */
             langVar?: string;
             /**
-                * the specified component's lifetime for loading i18n resources
+                * the specified lifetime for loading i18n resources
+                */
+            lifetime?: string | ((prototype: any) => string);
+            /**
+                * the specified component's lifetime for loading i18n resources,
                 * @default attached
-                * @deprecated
+                * @deprecated use lifetime instead
                 */
             componentLifetime?: string;
             /**
                 * the specified page's lifetime for loading i18n resources
                 * @default onLoad
-                * @deprecated
+                * @deprecated use lifetime instead
                 */
             pageLifetime?: string;
     }
@@ -223,6 +227,7 @@ declare module 'mp-i18n/config' {
             lang: string;
             langVar: string;
             languageStorageKey: string;
+            lifetime: (prototype: any) => any;
             pageLifetime: string;
             provider: IProvider;
             rememberLanguage: boolean;

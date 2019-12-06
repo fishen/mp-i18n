@@ -1,5 +1,4 @@
 import { defaultConfig, II18nConfigOptions } from "./config";
-import { I18N_LOAD_LIFETIME } from "./constants";
 import { I18nStore } from "./store";
 import { Util } from "./util";
 
@@ -65,10 +64,11 @@ let userLanguage: string;
 
 function getLifetime(target: any, options: II18nLoadOptions) {
     options = Object.assign({}, options);
-    let lifetime = options.lifetime;
-    lifetime = lifetime || target.prototype[I18N_LOAD_LIFETIME];
+    let lifetime: any = options.lifetime;
     lifetime = lifetime || options.isPage && config.pageLifetime;
     lifetime = lifetime || options.isComponent && config.componentLifetime;
+    lifetime = lifetime || config.lifetime;
+    lifetime = util.isFn(lifetime) ? lifetime(target.prototype) : lifetime;
     return lifetime;
 }
 

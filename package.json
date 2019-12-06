@@ -1,6 +1,6 @@
 {
   "name": "mp-i18n",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "A cross-platform i18n library for muti-miniprograms (taro、wx、alipay、baidu、tt).",
   "main": "index.js",
   "scripts": {

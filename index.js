@@ -159,6 +159,19 @@ exports.DefaultProvider = DefaultProvider;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.DESIGN_PARAM_TYPES = "design:paramtypes";
+exports.DESIGN_TYPE = "design:type";
+exports.DESIGN_RETURN_TYPE = "design:returntype";
+exports.I18N_LOAD_LIFETIME = Symbol("i18n load lifetime");
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(0);
 var default_provider_1 = __webpack_require__(1);
 var TTProvider = /** @class */ (function (_super) {
@@ -175,19 +188,6 @@ exports.TTProvider = TTProvider;
 
 
 /***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.DESIGN_PARAM_TYPES = "design:paramtypes";
-exports.DESIGN_TYPE = "design:type";
-exports.DESIGN_RETURN_TYPE = "design:returntype";
-exports.I18N_LOAD_LIFETIME = Symbol("i18n load lifetime");
-
-
-/***/ }),
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -198,7 +198,7 @@ var i18n_1 = __webpack_require__(5);
 exports.i18n = i18n_1.i18n;
 var default_provider_1 = __webpack_require__(1);
 exports.DefaultProvider = default_provider_1.DefaultProvider;
-var constants_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(2);
 exports.I18N_LOAD_LIFETIME = constants_1.I18N_LOAD_LIFETIME;
 
 
@@ -210,7 +210,6 @@ exports.I18N_LOAD_LIFETIME = constants_1.I18N_LOAD_LIFETIME;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var config_1 = __webpack_require__(6);
-var constants_1 = __webpack_require__(3);
 var store_1 = __webpack_require__(9);
 var util_1 = __webpack_require__(10);
 var store;
@@ -219,9 +218,10 @@ var userLanguage;
 function getLifetime(target, options) {
     options = Object.assign({}, options);
     var lifetime = options.lifetime;
-    lifetime = lifetime || target.prototype[constants_1.I18N_LOAD_LIFETIME];
     lifetime = lifetime || options.isPage && exports.config.pageLifetime;
     lifetime = lifetime || options.isComponent && exports.config.componentLifetime;
+    lifetime = lifetime || exports.config.lifetime;
+    lifetime = util.isFn(lifetime) ? lifetime(target.prototype) : lifetime;
     return lifetime;
 }
 function i18n(options) {
@@ -483,6 +483,7 @@ i18n.mergeTexts = function (data, lang) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+var constants_1 = __webpack_require__(2);
 var provider_factory_1 = __webpack_require__(7);
 exports.defaultConfig = {
     cachable: true,
@@ -491,6 +492,7 @@ exports.defaultConfig = {
     lang: "zh_CN",
     langVar: "$lang",
     languageStorageKey: "i18n_language",
+    lifetime: function (prototype) { return prototype[constants_1.I18N_LOAD_LIFETIME]; },
     pageLifetime: "onLoad",
     provider: provider_factory_1.createProvider(),
     rememberLanguage: true,
@@ -508,7 +510,7 @@ exports.defaultConfig = {
 Object.defineProperty(exports, "__esModule", { value: true });
 var alipay_provider_1 = __webpack_require__(8);
 var default_provider_1 = __webpack_require__(1);
-var toutiao_provider_1 = __webpack_require__(2);
+var toutiao_provider_1 = __webpack_require__(3);
 function createProvider() {
     try {
         if (wx !== undefined) {
@@ -546,7 +548,7 @@ exports.createProvider = createProvider;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(0);
-var toutiao_provider_1 = __webpack_require__(2);
+var toutiao_provider_1 = __webpack_require__(3);
 var AliProvider = /** @class */ (function (_super) {
     tslib_1.__extends(AliProvider, _super);
     function AliProvider() {

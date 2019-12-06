@@ -1,3 +1,4 @@
+import { I18N_LOAD_LIFETIME } from "./constants";
 import { IProvider } from "./providers/provider";
 import { createProvider } from "./providers/provider-factory";
 
@@ -55,15 +56,19 @@ export interface II18nConfigOptions {
      */
     langVar?: string;
     /**
-     * the specified component's lifetime for loading i18n resources
+     * the specified lifetime for loading i18n resources
+     */
+    lifetime?: string | ((prototype: any) => string);
+    /**
+     * the specified component's lifetime for loading i18n resources,
      * @default attached
-     * @deprecated
+     * @deprecated use lifetime instead
      */
     componentLifetime?: string;
     /**
      * the specified page's lifetime for loading i18n resources
      * @default onLoad
-     * @deprecated
+     * @deprecated use lifetime instead
      */
     pageLifetime?: string;
 }
@@ -75,6 +80,7 @@ export const defaultConfig = {
     lang: "zh_CN",
     langVar: "$lang",
     languageStorageKey: "i18n_language",
+    lifetime: (prototype) => prototype[I18N_LOAD_LIFETIME],
     pageLifetime: "onLoad",
     provider: createProvider(),
     rememberLanguage: true,

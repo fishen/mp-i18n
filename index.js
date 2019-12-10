@@ -144,7 +144,7 @@ var DefaultProvider = /** @class */ (function () {
             throw new TypeError("Invalid provider type.");
         }
         params = Object.assign({}, params);
-        return new Promise(function (success, fail) { return fn(tslib_1.__assign({}, params, { success: success, fail: fail })); })
+        return new Promise(function (success, fail) { return fn(tslib_1.__assign(tslib_1.__assign({}, params), { success: success, fail: fail })); })
             .catch(function (err) { return (console.log(err), Promise.reject(err)); });
     };
     return DefaultProvider;

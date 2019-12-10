@@ -6,8 +6,6 @@
     "noImplicitAny": false,
     "module": "commonjs",
     "target": "es5",
-    "declaration": true,
-    "declarationDir": "dts",
     "allowJs": false,
     "importHelpers": true,
     "typeRoots": [

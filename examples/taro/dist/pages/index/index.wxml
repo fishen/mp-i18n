@@ -1,6 +1,0 @@
-<block wx:if="{{$taroCompReady}}">
-    <view class="index">
-        <view>1.{{hint}}</view>
-        <view>2.{{$t.hello}}，{{$t.world}}。</view>
-    </view>
-</block>

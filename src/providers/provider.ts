@@ -6,5 +6,5 @@ export interface IProvider {
     setStorage(params: { key: string, data: any }): Promise<any>;
     getStorage(params: { key: string }): Promise<{ data: any }>;
     getStorageSync(key: string): any;
-    getCurrentPages(): [{ route: string }];
+    getCurrentPages(): [{ route?: string, __route__?: string }];
 }

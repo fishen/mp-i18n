@@ -97,6 +97,7 @@ module.exports = require("tslib");
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.DefaultProvider = void 0;
 var tslib_1 = __webpack_require__(0);
 var DefaultProvider = /** @class */ (function () {
     function DefaultProvider(provider) {
@@ -159,6 +160,7 @@ exports.DefaultProvider = DefaultProvider;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.I18N_LOAD_LIFETIME = exports.DESIGN_RETURN_TYPE = exports.DESIGN_TYPE = exports.DESIGN_PARAM_TYPES = void 0;
 exports.DESIGN_PARAM_TYPES = "design:paramtypes";
 exports.DESIGN_TYPE = "design:type";
 exports.DESIGN_RETURN_TYPE = "design:returntype";
@@ -172,6 +174,7 @@ exports.I18N_LOAD_LIFETIME = Symbol("i18n load lifetime");
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TTProvider = void 0;
 var tslib_1 = __webpack_require__(0);
 var default_provider_1 = __webpack_require__(1);
 var TTProvider = /** @class */ (function (_super) {
@@ -195,11 +198,11 @@ exports.TTProvider = TTProvider;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var i18n_1 = __webpack_require__(5);
-exports.i18n = i18n_1.i18n;
+Object.defineProperty(exports, "i18n", { enumerable: true, get: function () { return i18n_1.i18n; } });
 var default_provider_1 = __webpack_require__(1);
-exports.DefaultProvider = default_provider_1.DefaultProvider;
+Object.defineProperty(exports, "DefaultProvider", { enumerable: true, get: function () { return default_provider_1.DefaultProvider; } });
 var constants_1 = __webpack_require__(2);
-exports.I18N_LOAD_LIFETIME = constants_1.I18N_LOAD_LIFETIME;
+Object.defineProperty(exports, "I18N_LOAD_LIFETIME", { enumerable: true, get: function () { return constants_1.I18N_LOAD_LIFETIME; } });
 
 
 /***/ }),
@@ -209,6 +212,7 @@ exports.I18N_LOAD_LIFETIME = constants_1.I18N_LOAD_LIFETIME;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.i18n = exports.config = void 0;
 var config_1 = __webpack_require__(6);
 var store_1 = __webpack_require__(9);
 var util_1 = __webpack_require__(10);
@@ -483,6 +487,7 @@ i18n.mergeTexts = function (data, lang) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.defaultConfig = void 0;
 var constants_1 = __webpack_require__(2);
 var provider_factory_1 = __webpack_require__(7);
 exports.defaultConfig = {
@@ -508,6 +513,7 @@ exports.defaultConfig = {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createProvider = void 0;
 var alipay_provider_1 = __webpack_require__(8);
 var default_provider_1 = __webpack_require__(1);
 var toutiao_provider_1 = __webpack_require__(3);
@@ -547,6 +553,7 @@ exports.createProvider = createProvider;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AliProvider = void 0;
 var tslib_1 = __webpack_require__(0);
 var toutiao_provider_1 = __webpack_require__(3);
 var AliProvider = /** @class */ (function (_super) {
@@ -570,6 +577,7 @@ exports.AliProvider = AliProvider;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.I18nStore = void 0;
 var I18nStore = /** @class */ (function () {
     function I18nStore(config) {
         this.prefix = config.storageKeyPrefix;
@@ -629,6 +637,7 @@ exports.I18nStore = I18nStore;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Util = void 0;
 var Util = /** @class */ (function () {
     function Util(config) {
         this.config = config;
@@ -636,7 +645,7 @@ var Util = /** @class */ (function () {
     Util.prototype.getCurrentPageRoute = function () {
         var pages = this.config.provider.getCurrentPages();
         var currentPage = pages[pages.length - 1];
-        return currentPage.route;
+        return currentPage.route || currentPage.__route__;
     };
     Util.prototype.request = function (url) {
         var _this = this;

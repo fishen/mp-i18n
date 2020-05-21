@@ -5,7 +5,7 @@ export class Util {
     public getCurrentPageRoute() {
         const pages = this.config.provider.getCurrentPages();
         const currentPage = pages[pages.length - 1];
-        return currentPage.route;
+        return currentPage.route || currentPage.__route__;
     }
 
     public request(url: string) {
